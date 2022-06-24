@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 bl_info = {
-    "name": "FBX format",
+    "name": "FBX format (linear sRGB vertex colors)",
     "author": "Campbell Barton, Bastien Montagne, Jens Restemeier",
     "version": (4, 36, 2),
     "blender": (3, 2, 0),
@@ -359,10 +359,10 @@ class FBX_PT_import_armature(bpy.types.Panel):
 
 
 @orientation_helper(axis_forward='-Z', axis_up='Y')
-class ExportFBX(bpy.types.Operator, ExportHelper):
-    """Write a FBX file"""
-    bl_idname = "export_scene.fbx"
-    bl_label = "Export FBX"
+class ExportFBXLinear(bpy.types.Operator, ExportHelper):
+    """Write a FBX file (linear sRGB)"""
+    bl_idname = "export_scene.fbx_linear"
+    bl_label = "Export FBX linear"
     bl_options = {'UNDO', 'PRESET'}
 
     filename_ext = ".fbx"
@@ -636,7 +636,7 @@ class ExportFBX(bpy.types.Operator, ExportHelper):
         return export_fbx_bin.save(self, context, **keywords)
 
 
-class FBX_PT_export_main(bpy.types.Panel):
+class FBX_PT_export_linear_main(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = ""
@@ -648,7 +648,7 @@ class FBX_PT_export_main(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw(self, context):
         layout = self.layout
@@ -669,7 +669,7 @@ class FBX_PT_export_main(bpy.types.Panel):
         sub.prop(operator, "use_batch_own_dir", text="", icon='NEWFOLDER')
 
 
-class FBX_PT_export_include(bpy.types.Panel):
+class FBX_PT_export_linear_include(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Include"
@@ -680,7 +680,7 @@ class FBX_PT_export_include(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw(self, context):
         layout = self.layout
@@ -700,7 +700,7 @@ class FBX_PT_export_include(bpy.types.Panel):
         layout.prop(operator, "use_custom_props")
 
 
-class FBX_PT_export_transform(bpy.types.Panel):
+class FBX_PT_export_linear_transform(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Transform"
@@ -711,7 +711,7 @@ class FBX_PT_export_transform(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw(self, context):
         layout = self.layout
@@ -734,7 +734,7 @@ class FBX_PT_export_transform(bpy.types.Panel):
         row.label(text="", icon='ERROR')
 
 
-class FBX_PT_export_geometry(bpy.types.Panel):
+class FBX_PT_export_linear_geometry(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Geometry"
@@ -746,7 +746,7 @@ class FBX_PT_export_geometry(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw(self, context):
         layout = self.layout
@@ -769,7 +769,7 @@ class FBX_PT_export_geometry(bpy.types.Panel):
         sub.prop(operator, "use_tspace")
 
 
-class FBX_PT_export_armature(bpy.types.Panel):
+class FBX_PT_export_linear_armature(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Armature"
@@ -781,7 +781,7 @@ class FBX_PT_export_armature(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw(self, context):
         layout = self.layout
@@ -798,7 +798,7 @@ class FBX_PT_export_armature(bpy.types.Panel):
         layout.prop(operator, "add_leaf_bones")
 
 
-class FBX_PT_export_bake_animation(bpy.types.Panel):
+class FBX_PT_export_linear_bake_animation(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Bake Animation"
@@ -810,7 +810,7 @@ class FBX_PT_export_bake_animation(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_SCENE_OT_fbx_linear"
 
     def draw_header(self, context):
         sfile = context.space_data
@@ -840,23 +840,17 @@ def menu_func_import(self, context):
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportFBX.bl_idname, text="FBX (.fbx)")
+    self.layout.operator(ExportFBXLinear.bl_idname, text="FBX linear sRGB (.fbx)")
 
 
 classes = (
-    ImportFBX,
-    FBX_PT_import_include,
-    FBX_PT_import_transform,
-    FBX_PT_import_transform_manual_orientation,
-    FBX_PT_import_animation,
-    FBX_PT_import_armature,
-    ExportFBX,
-    FBX_PT_export_main,
-    FBX_PT_export_include,
-    FBX_PT_export_transform,
-    FBX_PT_export_geometry,
-    FBX_PT_export_armature,
-    FBX_PT_export_bake_animation,
+    ExportFBXLinear,
+    FBX_PT_export_linear_main,
+    FBX_PT_export_linear_include,
+    FBX_PT_export_linear_transform,
+    FBX_PT_export_linear_geometry,
+    FBX_PT_export_linear_armature,
+    FBX_PT_export_linear_bake_animation,
 )
 
 
@@ -864,12 +858,10 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
-    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
     for cls in classes:

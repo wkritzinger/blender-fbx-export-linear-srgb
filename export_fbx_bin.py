@@ -1116,9 +1116,22 @@ def fbx_data_mesh_elements(root, me_obj, scene_data, done_meshes):
         def _coltuples_gen(raw_cols):
             return zip(*(iter(raw_cols),) * 4)
 
+        def srgb_to_linsrgb(srgb):
+            """Convert sRGB values to physically linear ones. The transformation is
+            uniform in RGB, so *srgb* can be of any shape.
+
+            *srgb* values should range between 0 and 1, inclusively.
+            """
+            gamma = ((srgb + 0.055) / 1.055)**2.4
+            scale = srgb / 12.92
+            if srgb > 0.04045:
+                return gamma
+            return scale
+
         t_lc = array.array(data_types.ARRAY_FLOAT64, (0.0,)) * len(me.loops) * 4
         for colindex, collayer in enumerate(me.vertex_colors):
             collayer.data.foreach_get("color", t_lc)
+            t_lc = [srgb_to_linsrgb(x) for x in t_lc]
             lay_vcol = elem_data_single_int32(geom, b"LayerElementColor", colindex)
             elem_data_single_int32(lay_vcol, b"Version", FBX_GEOMETRY_VCOLOR_VERSION)
             elem_data_single_string_unicode(lay_vcol, b"Name", collayer.name)
